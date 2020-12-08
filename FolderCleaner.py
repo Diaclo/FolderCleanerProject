@@ -1,11 +1,13 @@
 import os
 from datetime import datetime
 import shutil
+import subprocess
 
 extensions = ['flv', 'mkv', 'mp4']
 basedir = '/Users/alessioarcara/Downloads/Python_Script/'
 enddir = '/Users/alessioarcara/Downloads/End_Dir/'
 memoryList = []
+filesAllowed = ['basi', 'ing', 'str']
 
 
 class FolderCleaner:
@@ -38,12 +40,39 @@ class FolderCleaner:
     @staticmethod
     def deleteFiles(base_dir):
         for filename in os.listdir(base_dir):
-            if not filename.endswith(tuple(extensions)):
-                os.remove(os.path.join(base_dir, filename))
+            if not filename.endswith(tuple(extensions)) or not any(s in filename.lower() for s in filesAllowed):
+                try:
+                    os.remove(os.path.join(base_dir, filename))
+                except Exception as e:
+                    print('Impossibile da cancellare %s. Reason %s' % (filename, e))
         return False
 
-if __name__ == '__main__':
-    folderCleaner = FolderCleaner()
-    folderCleaner.renameFiles('basi', 'Basi_dati')
-    folderCleaner.renameFiles('ing', 'Ing_Software')
-    folderCleaner.renameFiles('str', 'Strat_Org_Mercati')
+    @staticmethod
+    def hasAudioFilter(base_dir):
+        for filename in os.listdir(base_dir):
+            ffprobe_term = "ffprobe -v error -of flat=s_ -select_streams 1 -show_entries stream=duration -of " \
+                           "default=noprint_wrappers=1:nokey=1 " + os.path.join(base_dir, filename)
+            result = subprocess.run(ffprobe_term,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    shell=True)
+            if not result.stdout:
+                try:
+                    os.remove(os.path.join(base_dir, filename))
+                except Exception as e:
+                    print('Impossibile da cancellare %s. Reason %s' % (filename, e))
+        return False
+
+
+folderCleaner = FolderCleaner()
+folderCleaner.deleteFiles(basedir)
+folderCleaner.hasAudioFilter(basedir)
+folderCleaner.renameFiles(basedir, 'basi', 'Basi_dati')
+folderCleaner.renameFiles(basedir, 'ing', 'Ing_Software')
+folderCleaner.renameFiles(basedir, 'str', 'Strat_Org_Mercati')
+enddir = '/Users/alessioarcara/Downloads/End_Dir/Basi'
+folderCleaner.moveFiles(basedir, enddir, 'basi')
+enddir = '/Users/alessioarcara/Downloads/End_Dir/Ing'
+folderCleaner.moveFiles(basedir, enddir, 'ing')
+enddir = '/Users/alessioarcara/Downloads/End_Dir/Strat'
+folderCleaner.moveFiles(basedir, enddir, 'str')

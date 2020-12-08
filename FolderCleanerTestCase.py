@@ -12,8 +12,8 @@ class FolderCleanerTestCase(unittest.TestCase):
     def setUp(self):
 
         with open('/Users/alessioarcara/Downloads/Files.txt', 'r') as f:
-            for l in f:
-                fields = l.split('; ')
+            for lines in f:
+                fields = lines.split('; ')
                 namefile = fields[0]
                 date = datetime.strptime(fields[1].rstrip("\n"), "%d/%m/%Y")
                 # datetime into untix timestamp
@@ -24,6 +24,7 @@ class FolderCleanerTestCase(unittest.TestCase):
                     os.utime(self.base_dir + namefile, (utime, utime))
 
     def tearDown(self):
+        # TODO: teardown -> base_dir e end_dir
         for filename in os.listdir(self.base_dir):
             file_path = os.path.join(self.base_dir, filename)
             print(filename)
@@ -35,17 +36,32 @@ class FolderCleanerTestCase(unittest.TestCase):
     def testRenameFiles(self):
         files = [f'{self.base_dir}Basi_dati_{1}_20-11-2020.mp4',
                  f'{self.base_dir}Basi_dati_{1}_21-11-2020.mp4']
-        self.assertEqual(FolderCleaner.renameFiles(self.base_dir, 'basi', 'Basi_dati'), os.path.isfile(files[0] and files[1]))
+        self.assertEqual(
+            FolderCleaner.renameFiles(self.base_dir, 'basi', 'Basi_dati'),
+            os.path.isfile(files[0] and files[1]))
 
     def testMoveFiles(self):
         files = [f'{self.end_dir}Basi.mp4',
                  f'{self.end_dir}Basi2.mp4',
                  f'{self.end_dir}Basi3.mp4']
-        self.assertEqual(FolderCleaner.moveFiles(self.base_dir, self.end_dir, 'basi'), os.path.isfile(files[0] and files[1]))
+        self.assertEqual(
+            FolderCleaner.moveFiles(self.base_dir, self.end_dir, 'basi'),
+            os.path.isfile(files[0] and files[1]))
 
     def testDeleteFiles(self):
-        files = [f'{self.base_dir}Garbage',
-                 f'{self.base_dir}Garbage2',
-                 f'{self.base_dir}Garbage3',
-                 f'{self.base_dir}Garbage4']
-        self.assertEqual(FolderCleaner.deleteFiles(self.base_dir), os.path.isfile(files[0] and files[1] and files[2] and files[3]))
+        files = [f'{self.base_dir}Garbage.mp4',
+                 f'{self.base_dir}Garbage2.mp4',
+                 f'{self.base_dir}Garbage3.mp4',
+                 f'{self.base_dir}Garbage4.mp4']
+        self.assertEqual(
+            FolderCleaner.deleteFiles(self.base_dir),
+            os.path.isfile(files[0] and files[1] and files[2] and files[3]))
+
+    def testHasAudio(self):
+        files = [f'{self.base_dir}Garbage.mp4',
+                 f'{self.base_dir}Garbage2.mp4',
+                 f'{self.base_dir}Garbage3.mp4',
+                 f'{self.base_dir}Garbage4.mp4']
+        self.assertEqual(
+            FolderCleaner.hasAudioFilter(self.base_dir),
+            os.path.isfile(files[0] and files[1] and files[2] and files[3]))

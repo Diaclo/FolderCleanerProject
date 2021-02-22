@@ -12,7 +12,6 @@ filesAllowed = ['imp', 'web', 'lab']
 
 class FolderCleaner:
 
-    # TODO: gestire
     @staticmethod
     def renameFiles(base_dir, nome, nome_def):
         for filename in os.listdir(base_dir):

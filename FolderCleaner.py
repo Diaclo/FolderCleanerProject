@@ -5,13 +5,14 @@ import subprocess
 
 extensions = ['flv', 'mkv', 'mp4']
 basedir = '/Users/alessioarcara/Downloads/Python_Script/'
-enddir = '/Users/alessioarcara/Downloads/End_Dir/'
 memoryList = []
-filesAllowed = ['basi', 'ing', 'str']
+# 'basi', 'ing', 'str'
+filesAllowed = ['imp', 'web', 'lab']
 
 
 class FolderCleaner:
 
+    # TODO: gestire
     @staticmethod
     def renameFiles(base_dir, nome, nome_def):
         for filename in os.listdir(base_dir):
@@ -22,9 +23,9 @@ class FolderCleaner:
             except OSError:
                 mtimDate = 0
             if nome in filename.lower() and filename.lower().endswith(tuple(extensions)):
-                filename_def = f'{nome_def}_{c}_{mtimDate}.mp4'
+                filename_def = f'{nome_def}_{c}_{mtimDate}{filename[-4:]}'
                 while filename_def in memoryList:
-                    filename_def = f'{nome_def}_{c}_{mtimDate}.mp4'
+                    filename_def = f'{nome_def}_{c}_{mtimDate}{filename[-4:]}'
                     c += 1
                 os.replace(os.path.join(base_dir, filename), os.path.join(base_dir, filename_def))
                 memoryList.append(filename_def)
@@ -47,32 +48,35 @@ class FolderCleaner:
                     print('Impossibile da cancellare %s. Reason %s' % (filename, e))
         return False
 
-    @staticmethod
-    def hasAudioFilter(base_dir):
-        for filename in os.listdir(base_dir):
-            ffprobe_term = "ffprobe -v error -of flat=s_ -select_streams 1 -show_entries stream=duration -of " \
-                           "default=noprint_wrappers=1:nokey=1 " + os.path.join(base_dir, filename)
-            result = subprocess.run(ffprobe_term,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    shell=True)
-            if not result.stdout:
-                try:
-                    os.remove(os.path.join(base_dir, filename))
-                except Exception as e:
-                    print('Impossibile da cancellare %s. Reason %s' % (filename, e))
-        return False
+    # @staticmethod
+    # def hasAudioFilter(base_dir):
+    #     for filename in os.listdir(base_dir):
+    #         ffprobe_term = "ffprobe -v error -of flat=s_ -select_streams 1 -show_entries stream=duration -of " \
+    #                        "default=noprint_wrappers=1:nokey=1 " + os.path.join(base_dir, filename)
+    #         result = subprocess.run(ffprobe_term,
+    #                                 stdout=subprocess.PIPE,
+    #                                 stderr=subprocess.PIPE,
+    #                                 shell=True)
+    #         if not result.stdout:
+    #             try:
+    #                 os.remove(os.path.join(base_dir, filename))
+    #             except Exception as e:
+    #                 print('Impossibile da cancellare %s. Reason %s' % (filename, e))
+    #     return False
 
 
 folderCleaner = FolderCleaner()
+# Pulizia Files
 folderCleaner.deleteFiles(basedir)
-folderCleaner.hasAudioFilter(basedir)
-folderCleaner.renameFiles(basedir, 'basi', 'Basi_dati')
-folderCleaner.renameFiles(basedir, 'ing', 'Ing_Software')
-folderCleaner.renameFiles(basedir, 'str', 'Strat_Org_Mercati')
-enddir = '/Users/alessioarcara/Downloads/End_Dir/Basi'
-folderCleaner.moveFiles(basedir, enddir, 'basi')
-enddir = '/Users/alessioarcara/Downloads/End_Dir/Ing'
-folderCleaner.moveFiles(basedir, enddir, 'ing')
-enddir = '/Users/alessioarcara/Downloads/End_Dir/Strat'
-folderCleaner.moveFiles(basedir, enddir, 'str')
+# folderCleaner.hasAudioFilter(basedir)
+# Rename Files
+folderCleaner.renameFiles(basedir, 'imp', 'Teoria_Impresa')
+folderCleaner.renameFiles(basedir, 'web', 'Tecnologie_Web')
+folderCleaner.renameFiles(basedir, 'lab', 'Laboratorio_Mobile')
+# Move Files
+enddir = "/volume1/Università/Terzo Anno/Teoria dell'impresa"
+folderCleaner.moveFiles(basedir, enddir, 'imp')
+enddir = '/volume1/Università/Terzo Anno/Tecnologie Web'
+folderCleaner.moveFiles(basedir, enddir, 'web')
+enddir = '/volume1/Università/Terzo Anno/Laboratorio di applicazioni mobili'
+folderCleaner.moveFiles(basedir, enddir, 'lab')

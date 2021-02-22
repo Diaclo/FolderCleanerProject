@@ -57,11 +57,11 @@ class FolderCleanerTestCase(unittest.TestCase):
             FolderCleaner.deleteFiles(self.base_dir),
             os.path.isfile(files[0] and files[1] and files[2] and files[3]))
 
-    def testHasAudio(self):
-        files = [f'{self.base_dir}Garbage.mp4',
-                 f'{self.base_dir}Garbage2.mp4',
-                 f'{self.base_dir}Garbage3.mp4',
-                 f'{self.base_dir}Garbage4.mp4']
-        self.assertEqual(
-            FolderCleaner.hasAudioFilter(self.base_dir),
-            os.path.isfile(files[0] and files[1] and files[2] and files[3]))
+    # def testHasAudio(self):
+    #     files = [f'{self.base_dir}Garbage.mp4',
+    #              f'{self.base_dir}Garbage2.mp4',
+    #              f'{self.base_dir}Garbage3.mp4',
+    #              f'{self.base_dir}Garbage4.mp4']
+    #     self.assertEqual(
+    #         FolderCleaner.hasAudioFilter(self.base_dir),
+    #         os.path.isfile(files[0] and files[1] and files[2] and files[3]))
